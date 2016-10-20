@@ -17,10 +17,9 @@ public class Colony {
 		beta = 1.0;
 		Q = 5.0;
 		this.numAnts = numAnts;
-		loadGraph();
 	}
 	
-	private void loadGraph() {
+	public void loadGraph() {
 		edgeList = new ArrayList<Edge>();
 		// For demo, a static graph.
 		/*
@@ -114,7 +113,7 @@ public class Colony {
 		 
 	}
 	
-	private List<Edge> edgesFromNode(Node node) {
+	public List<Edge> edgesFromNode(Node node) {
 		ArrayList<Edge> foundEdges = new ArrayList<Edge>();
 		for(Edge e : edgeList){
 			if (e.source == node){
