@@ -53,7 +53,7 @@ public class Colony {
 		
 	}
 
-	public void iterate() {
+	public int iterate() {
 		
 		ArrayList<List<Edge>> paths = new ArrayList<List<Edge>>();
 		// Iterate through each ant
@@ -77,6 +77,7 @@ public class Colony {
 			}
 			System.out.println(sb.toString());
 		}
+		return 0;
 		
 	}
 	private List<Edge> findPath(Node start, Node end) {

@@ -1,6 +1,5 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,11 +19,23 @@ public class Main {
 		jss.rho = r;
 		jss.Q = Q;
 		jss.loadJSSP();
+		PrintWriter grapher;
+		try {
+			 grapher = new PrintWriter("plot.csv");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return;
+		}
+		
+		
 		for(int i = 0; i < numIterations; i++){
 			System.out.println("=======Start of JSS Generation=======");
-			jss.iterate();
+			int currentBest = jss.iterate();
+			grapher.printf("%d,%d,%d\n", i, jss.bestMakespan, currentBest);
 			System.out.println("========End of JSS Generation========");
 		}
+		grapher.close();
 		// Display best path
 		
 		System.out.println("--- Allocation to jobs ---");

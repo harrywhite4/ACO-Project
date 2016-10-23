@@ -25,6 +25,7 @@ public class JSSColony extends Colony {
     //set of nodes already visited
     public ArrayList<Node> visited;
     public List<Edge> bestPath;
+    public int bestMakespan;
 
     public JSSColony(int numAnts) {
         super(numAnts);
@@ -33,6 +34,7 @@ public class JSSColony extends Colony {
         visited = new ArrayList<Node>();
         nodes = new ArrayList<Node>();
         edgeList = new ArrayList<Edge>();
+        bestMakespan = -1;
     }
 
     public void loadJSSP() {
@@ -188,7 +190,7 @@ public class JSSColony extends Colony {
     }
 
     //override
-    public void iterate() {
+    public int iterate() {
             
         ArrayList<List<Edge>> paths = new ArrayList<List<Edge>>();
         // Iterate through each ant
@@ -212,7 +214,10 @@ public class JSSColony extends Colony {
         
         // Add Pheromone to path with min makespan proportional to makespan
         List<Edge> path = paths.get(minMakespanIndex);
-        bestPath = path;
+        if (minMakespan < bestMakespan ||  bestMakespan == -1){
+            bestPath = path;
+            bestMakespan = minMakespan;
+        }
         StringBuilder sb = new StringBuilder("Best found path of: ");
         sb.append(path.get(0).source.label);
         // Add to each edge the same
@@ -222,7 +227,7 @@ public class JSSColony extends Colony {
         }
         System.out.println(sb.toString());
         System.out.println("Makespan was " + minMakespan);
-        
+        return minMakespan;
 
         
     }
