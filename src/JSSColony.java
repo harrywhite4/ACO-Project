@@ -55,6 +55,40 @@ public class JSSColony extends Colony {
         connectNodes();
 
     }
+    
+    public void loadRandom(int machines, int jobs, int timeRange) {
+    	numMachines = machines;
+    	int numJobs = jobs;
+    	numNodes = numMachines * numJobs;
+    	// Generate random reqs
+    	/*
+        public int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+        public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
+        public int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
+        */
+    	int[] newMachineNo = new int[numNodes];
+    	int[] newJobNo = new int[numNodes];
+    	int[] newRunTimes= new int[numNodes];
+    	for (int i = 0; i < numNodes; i++){
+    		newRunTimes[i] = Main.randGen.nextInt(timeRange);
+    		newJobNo[i] = (i / numMachines)+1;
+    		newMachineNo[i] = (i % numMachines)+1;
+    		System.out.printf("Generated randomly Job #%d on machine %d running for %d time\n", newJobNo[i], newMachineNo[i], newRunTimes[i]);
+    	}
+    	machineNo = newMachineNo;
+    	jobNo = newJobNo;
+    	runTimes = newRunTimes;
+    	
+    	
+    	char current = 'a';
+    	Node toadd;
+    	for (int i = 0; i < numNodes; i++){
+    		toadd = new Node(Character.toString(current));
+    		nodes.add(toadd);
+    		current++;
+    	}
+    	connectNodes();
+    }
 
     public void resetJSS() {
         allowed.clear();

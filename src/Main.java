@@ -18,7 +18,8 @@ public class Main {
 		jss.beta = b;
 		jss.rho = r;
 		jss.Q = Q;
-		jss.loadJSSP();
+		//jss.loadJSSP();
+		jss.loadRandom(8,8,12);
 		PrintWriter grapher;
 		try {
 			 grapher = new PrintWriter("plot.csv");
