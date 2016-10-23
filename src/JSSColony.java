@@ -5,14 +5,16 @@ import java.util.Iterator;
 
 public class JSSColony extends Colony {
 
-	/*
+	
     public int[] machineNo = {1, 2, 3, 3, 2, 1, 2, 3, 1, 1, 3, 2};
     public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4};
     public int[] runTimes = {2, 3, 4, 4, 4, 1, 2, 2, 3, 3, 3, 1};
-    */
+    
+	/*
     public int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
     public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
     public int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
+    */
     public ArrayList<Node> nodes;
     public int numNodes;
     public int numMachines;
@@ -35,7 +37,7 @@ public class JSSColony extends Colony {
 
     public void loadJSSP() {
         //example problem used for testing 
-        numNodes = 9;
+        numNodes = 12;
         numMachines = 3;
 
         char current = 'a';
