@@ -37,12 +37,7 @@ public class Main {
 		for (int i = 0; i < jss.numMachines; i++){
 			machines.add(new ArrayList<Node>());
 		}
-		
-		for(Node n : order){
-			int index = jss.nodes.indexOf(n);
-			int machineNum = jss.machineNo[index];
-			machines.get(machineNum-1).add(n);
-		}
+
 		PrintWriter writer;
 		try {
 			writer  = new PrintWriter("python/data.csv","UTF-8");
@@ -51,11 +46,16 @@ public class Main {
 			return;
 		} 
 		writer.printf("%d,%d,%d\n", machines.size(), jss.calculateMakespan(order), jss.numNodes / jss.numMachines);
+		for(Node n : order){
+			int index = jss.nodes.indexOf(n);
+			int machineNum = jss.machineNo[index];
+			machines.get(machineNum-1).add(n);
+			writer.printf("%d,%d,%d\n", machineNum-1, jss.jobNo[index], jss.runTimes[index]);
+		}
 		for (List<Node> machine : machines){
 			System.out.println("Machine #" + (machines.indexOf(machine)+1));
 			for (Node n : machine){
 		        int index = n.label.charAt(0) - 97;
-				writer.printf("%d,%d,%d\n", machines.indexOf(machine), jss.jobNo[index], jss.runTimes[index]);
 				System.out.printf("\tworking on job #%d for %d time\n", jss.jobNo[index], jss.runTimes[index]);
 			}
 		}
