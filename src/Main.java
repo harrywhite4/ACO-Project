@@ -7,12 +7,21 @@ import java.util.Random;
 public class Main {
 	public static Random randGen;
 	public static long seed = 12334;
+	public static boolean verbose = false;
 	public static void main(String[] args) {
 		randGen = new Random(seed);
-		runColonyWith(1.0,1.0,1.0,5.0,10,10);
+
+		runColonyWith(3.5,1.0,0.5,100.0,5,100, "a");
+		randGen = new Random(seed);
+		runColonyWith(5,1.0,0.5,100.0,5,100, "b");
+		randGen = new Random(seed);
+		runColonyWith(10,1.0,0.5,100.0,5,100, "c");
+		randGen = new Random(seed);
+		runColonyWith(5,5,0.5,100.0,5,100, "d");
+		randGen = new Random(seed);
 	}
 	
-	public static void runColonyWith(double a, double b, double r, double Q, int numAnts, int numIterations){
+	public static void runColonyWith(double a, double b, double r, double Q, int numAnts, int numIterations, String file){
 		JSSColony jss = new JSSColony(numAnts);
 		jss.alpha = a;
 		jss.beta = b;
@@ -22,7 +31,7 @@ public class Main {
 		jss.loadRandom(8,8,12);
 		PrintWriter grapher;
 		try {
-			 grapher = new PrintWriter("plot.csv");
+			 grapher = new PrintWriter(file+"plot.csv");
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -31,14 +40,17 @@ public class Main {
 		
 		
 		for(int i = 0; i < numIterations; i++){
-			System.out.println("=======Start of JSS Generation=======");
+			if (Main.verbose)
+				System.out.println("=======Start of JSS Generation=======");
 			int currentBest = jss.iterate();
 			grapher.printf("%d,%d,%d\n", i, jss.bestMakespan, currentBest);
-			System.out.println("========End of JSS Generation========");
+
+			if (Main.verbose)
+				System.out.println("========End of JSS Generation========");
 		}
 		grapher.close();
 		// Display best path
-		
+
 		System.out.println("--- Allocation to jobs ---");
 		ArrayList<Node> order = new ArrayList<Node>();
 		for (Edge e: jss.bestPath){
@@ -52,12 +64,12 @@ public class Main {
 
 		PrintWriter writer;
 		try {
-			writer  = new PrintWriter("python/data.csv","UTF-8");
+			writer  = new PrintWriter("python/" + file + "data.csv","UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		} 
-		writer.printf("%d,%d,%d\n", machines.size(), jss.calculateMakespan(order), jss.numNodes / jss.numMachines);
+		writer.printf("%d,%d,%d\n", jss.numMachines, jss.calculateMakespan(order), jss.numNodes / jss.numMachines);
 		for(Node n : order){
 			int index = jss.nodes.indexOf(n);
 			int machineNum = jss.machineNo[index];

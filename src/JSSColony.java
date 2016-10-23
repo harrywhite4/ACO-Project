@@ -5,20 +5,21 @@ import java.util.Iterator;
 
 public class JSSColony extends Colony {
 
-	
+	/*
     public int[] machineNo = {1, 2, 3, 3, 2, 1, 2, 3, 1, 1, 3, 2};
     public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4};
     public int[] runTimes = {2, 3, 4, 4, 4, 1, 2, 2, 3, 3, 3, 1};
-    
-	/*
+    */
+	
     public int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
     public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
     public int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
-    */
+    
     public ArrayList<Node> nodes;
     public int numNodes;
     public int numMachines;
     public int opsPerJob;
+    public static boolean elitistAnt = true;
 
     //set of nodes that are able to be visited base on constraints of problem
     public ArrayList<Node> allowed;
@@ -39,11 +40,10 @@ public class JSSColony extends Colony {
 
     public void loadJSSP() {
         //example problem used for testing 
-        numNodes = 12;
+        numNodes = 9;
         numMachines = 3;
 
         char current = 'a';
-
         Node toadd;
         for (int i = 0; i < numNodes; i++) {
             toadd = new Node(Character.toString(current));
@@ -252,15 +252,44 @@ public class JSSColony extends Colony {
             bestPath = path;
             bestMakespan = minMakespan;
         }
+        
+        
+        
         StringBuilder sb = new StringBuilder("Best found path of: ");
         sb.append(path.get(0).source.label);
         // Add to each edge the same
+        /*
         for(Edge e : path){
             sb.append("-" + e.target.label);
             e.pheromone += Q / minMakespan;
         }
-        System.out.println(sb.toString());
-        System.out.println("Makespan was " + minMakespan);
+*/
+        for (List<Edge> p : paths){
+        	ArrayList<Node> visitedNodes = new ArrayList<Node>();
+        	
+        	for (Edge e : p){
+        		visitedNodes.add(e.source);
+        	}
+        	visitedNodes.add(p.get(p.size()-1).target);
+
+        	for (Edge e : p){
+        		e.pheromone += Q / calculateMakespan(visitedNodes);
+        	}
+        }
+        // Add pheromone to Gbest (elitist ant)
+        if (JSSColony.elitistAnt){
+        	for (Edge e : bestPath){
+        		e.pheromone += 1.0;
+        	}
+        }
+        
+        
+        
+
+		if (Main.verbose) {
+			System.out.println(sb.toString());
+	        System.out.println("Makespan was " + minMakespan);
+		}
         return minMakespan;
 
         
