@@ -16,7 +16,7 @@ public class Main {
 		}
 
 		JSSColony jss = new JSSColony(numAnts);
-                jss.loadJSSP();
+		jss.loadJSSP();
 		for(int i = 0; i < numIterations; i++){
 			System.out.println("=======Start of JSS Generation=======");
 			jss.iterate();

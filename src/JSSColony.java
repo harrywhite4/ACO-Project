@@ -213,7 +213,35 @@ public class JSSColony extends Colony {
         }
         System.out.println(sb.toString());
         System.out.println("Makespan was " + minMakespan);
-
+        
+        System.out.println("--- Allocation to jobs ---");
+        ArrayList<Node> order = new ArrayList<Node>();
+        for (Edge e: path){
+        	order.add(e.source);
+        } 
+        order.add(path.get(path.size()-1).target);
+        List<List<Node>> machines = new ArrayList<List<Node>>(numMachines);
+        for (int i = 0; i < numMachines; i++){
+        	machines.add(new ArrayList<Node>());
+        }
+        
+        for(Node n : order){
+        	int index = nodes.indexOf(n);
+        	int machineNum = machineNo[index];
+        	machines.get(machineNum-1).add(n);
+        }
+        
+        
+        for (List<Node> machine : machines){
+        	System.out.println("Machine #" + (machines.indexOf(machine)+1));
+        	for (Node n : machine){
+                int index = n.label.charAt(0) - 97;
+        		System.out.printf("\tworking on job #%d for %d time\n", jobNo[index], runTimes[index]);
+        	}
+        }
+        
+        System.out.println("--- End allocation ---");
+        
     }
 
 }
