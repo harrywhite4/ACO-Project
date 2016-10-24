@@ -50,6 +50,7 @@ public class Main {
 		}
 		grapher.close();
 		// Display best path
+                jss.bestPath.remove(0); //remove edge from startNode from bestpath
 
 		System.out.println("--- Allocation to jobs ---");
 		ArrayList<Node> order = new ArrayList<Node>();

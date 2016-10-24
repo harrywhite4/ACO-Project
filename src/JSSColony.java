@@ -36,6 +36,7 @@ public class JSSColony extends Colony {
         nodes = new ArrayList<Node>();
         edgeList = new ArrayList<Edge>();
         bestMakespan = -1;
+        startNode = new Node("start");
     }
 
     public void loadJSSP() {
@@ -54,6 +55,22 @@ public class JSSColony extends Colony {
         //add edges
         connectNodes();
 
+        //add edges from start node
+        connectStart();
+    }
+
+    public void connectStart() {
+
+        //add edges from start node
+        Edge e;
+        e = new Edge(startNode, nodes.get(0));
+        edgeList.add(e);
+        for (int i = 1; i < numNodes; i++) {
+            if (jobNo[i-1] != jobNo[i]) { //if first in a job
+                e = new Edge(startNode, nodes.get(i), 1);
+                edgeList.add(e);
+            }
+        }
     }
     
     public void loadRandom(int machines, int jobs, int timeRange) {
@@ -75,10 +92,10 @@ public class JSSColony extends Colony {
     		newMachineNo[i] = (i % numMachines)+1;
     		System.out.printf("Generated randomly Job #%d on machine %d running for %d time\n", newJobNo[i], newMachineNo[i], newRunTimes[i]);
     	}
+
     	machineNo = newMachineNo;
     	jobNo = newJobNo;
     	runTimes = newRunTimes;
-    	
     	
     	char current = 'a';
     	Node toadd;
@@ -87,14 +104,16 @@ public class JSSColony extends Colony {
     		nodes.add(toadd);
     		current++;
     	}
+
     	connectNodes();
+        connectStart();
     }
 
     public void resetJSS() {
         allowed.clear();
         visited.clear();
 
-        //add first set of nodes to allowed
+        //add first set of nodes to allowed (could replace with nodes coming from startNode)
         allowed.add(nodes.get(0));
         for (int i = 1; i < numNodes; i++) {
             if (jobNo[i-1] != jobNo[i]) { //if first in a job
@@ -102,8 +121,10 @@ public class JSSColony extends Colony {
             }
         }
 
+        /*
         int choice = (int)(Main.randGen.nextDouble() * allowed.size());
         startNode = allowed.get(choice);
+        */
     }
 
     private void connectNodes() {
@@ -124,6 +145,7 @@ public class JSSColony extends Colony {
 
         if (order.size() != numNodes) {
             System.out.println("incomplete solution generated!!!");
+            System.out.println("soln of size " + order.size() + " it should be of size " + numNodes);
         }
 
         int[] machineEndtimes = new int[numMachines];
@@ -165,9 +187,9 @@ public class JSSColony extends Colony {
     private List<Edge> findPathJSS(Node start) {
 
         Node currentNode = start;
-        allowed.remove(currentNode);
-        allowed.add(nodes.get(nodes.indexOf(currentNode)+1));
-        visited.add(currentNode);
+        //allowed.remove(currentNode);
+        //allowed.add(nodes.get(nodes.indexOf(currentNode)+1));
+        //visited.add(currentNode);
         ArrayList<Edge> path = new ArrayList<Edge>();
 
         while (!allowed.isEmpty()) {
@@ -268,7 +290,9 @@ public class JSSColony extends Colony {
         	ArrayList<Node> visitedNodes = new ArrayList<Node>();
         	
         	for (Edge e : p){
-        		visitedNodes.add(e.source);
+                        if (e.source.label != startNode.label) { //if not start node
+                                visitedNodes.add(e.source);
+                        }
         	}
         	visitedNodes.add(p.get(p.size()-1).target);
 
@@ -290,6 +314,7 @@ public class JSSColony extends Colony {
 			System.out.println(sb.toString());
 	        System.out.println("Makespan was " + minMakespan);
 		}
+
         return minMakespan;
 
         
