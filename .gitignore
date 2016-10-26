@@ -3,3 +3,5 @@ bin/
 .project
 .settings/
 src/*.class
+*.csv
+python/*.csv
