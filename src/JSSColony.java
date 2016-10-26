@@ -5,17 +5,7 @@ import java.util.Iterator;
 
 public class JSSColony extends Colony {
 
-	/*
-    public int[] machineNo = {1, 2, 3, 3, 2, 1, 2, 3, 1, 1, 3, 2};
-    public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4};
-    public int[] runTimes = {2, 3, 4, 4, 4, 1, 2, 2, 3, 3, 3, 1};
-    */
-	
-    public int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
-    public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
-    public int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
-    
-    public ArrayList<Node> nodes;
+    public ArrayList<Node> nodes; //order nodes are put into this array is important
     public int numNodes;
     public int numMachines;
     public int opsPerJob;
@@ -41,13 +31,18 @@ public class JSSColony extends Colony {
 
     public void loadJSSP() {
         //example problem used for testing 
+        int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+        int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3}; //could remove this and just use opsperjob
+        int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
+        opsPerJob = 3;
+
         numNodes = 9;
         numMachines = 3;
 
         char current = 'a';
         Node toadd;
         for (int i = 0; i < numNodes; i++) {
-            toadd = new Node(Character.toString(current));
+            toadd = new Node(Character.toString(current), machineNo[i], jobNo[i], (i%opsPerJob)+1, runTimes[i]);
             nodes.add(toadd); 
             current++;
         }
@@ -63,11 +58,13 @@ public class JSSColony extends Colony {
 
         //add edges from start node
         Edge e;
+        Node n;
         e = new Edge(startNode, nodes.get(0));
         edgeList.add(e);
         for (int i = 1; i < numNodes; i++) {
-            if (jobNo[i-1] != jobNo[i]) { //if first in a job
-                e = new Edge(startNode, nodes.get(i), 1);
+            n = nodes.get(i);
+            if (n.sequence == 1) { //if first in a job
+                e = new Edge(startNode, n, 1);
                 edgeList.add(e);
             }
         }
@@ -77,30 +74,21 @@ public class JSSColony extends Colony {
     	numMachines = machines;
     	int numJobs = jobs;
     	numNodes = numMachines * numJobs;
+        opsPerJob = numMachines;
     	// Generate random reqs
-    	/*
-        public int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
-        public int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
-        public int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
-        */
-    	int[] newMachineNo = new int[numNodes];
-    	int[] newJobNo = new int[numNodes];
-    	int[] newRunTimes= new int[numNodes];
-    	for (int i = 0; i < numNodes; i++){
-    		newRunTimes[i] = Main.randGen.nextInt(timeRange);
-    		newJobNo[i] = (i / numMachines)+1;
-    		newMachineNo[i] = (i % numMachines)+1;
-    		System.out.printf("Generated randomly Job #%d on machine %d running for %d time\n", newJobNo[i], newMachineNo[i], newRunTimes[i]);
-    	}
-
-    	machineNo = newMachineNo;
-    	jobNo = newJobNo;
-    	runTimes = newRunTimes;
-    	
+    	int newMachineNo;
+    	int newJobNo;
+        int newSequence;
+    	int newRunTime;
     	char current = 'a';
     	Node toadd;
     	for (int i = 0; i < numNodes; i++){
-    		toadd = new Node(Character.toString(current));
+    		newRunTime = Main.randGen.nextInt(timeRange);
+    		newJobNo = (i / numMachines)+1;
+                newSequence = (i%opsPerJob)+1;
+    		newMachineNo = (i % numMachines)+1;
+    		System.out.printf("Generated randomly Job #%d on machine %d running for %d time\n", newJobNo, newMachineNo, newRunTime);
+    		toadd = new Node(Character.toString(current), newMachineNo, newJobNo, newSequence, newRunTime);
     		nodes.add(toadd);
     		current++;
     	}
@@ -114,17 +102,14 @@ public class JSSColony extends Colony {
         visited.clear();
 
         //add first set of nodes to allowed (could replace with nodes coming from startNode)
-        allowed.add(nodes.get(0));
-        for (int i = 1; i < numNodes; i++) {
-            if (jobNo[i-1] != jobNo[i]) { //if first in a job
-                allowed.add(nodes.get(i));
+        Node n;
+        for (int i = 0; i < numNodes; i++) {
+            n = nodes.get(i);
+            if (n.sequence == 1) { //if first in a job
+                allowed.add(n);
             }
         }
 
-        /*
-        int choice = (int)(Main.randGen.nextDouble() * allowed.size());
-        startNode = allowed.get(choice);
-        */
     }
 
     private void connectNodes() {
@@ -132,7 +117,7 @@ public class JSSColony extends Colony {
         Edge toadd;
 
         for (int i=0; i < numNodes; i++) {
-            for(int j=0; j< numNodes; j++) {
+            for(int j=0; j < numNodes; j++) {
                 if (j != i) {
                     toadd = new Edge(nodes.get(i), nodes.get(j), 1);
                     edgeList.add(toadd);
@@ -154,20 +139,21 @@ public class JSSColony extends Colony {
         Arrays.fill(endTimes, -1);
        
         int index, machine;
+        Node n;
 
         for (int i=0; i < numNodes; i++) {
-            index = nodes.indexOf(order.get(i)); 
-            machine = machineNo[index] - 1;
-            if (index == 0 || jobNo[index-1] != jobNo[index]) { //if first in a job
-                endTimes[index] = machineEndtimes[machine] + runTimes[index];
-                machineEndtimes[machine] += runTimes[index];
+            n = order.get(i);
+            index = nodes.indexOf(n); //index of node in nodes arrayList;
+            machine = n.machine - 1;
+            if (n.sequence == 1) { //if first in a job
+                endTimes[index] = machineEndtimes[machine] + n.runTime;
+                machineEndtimes[machine] += n.runTime;
             } else {
-                if (endTimes[index - 1] == -1) { System.out.println("error"); } //for debugging
                 if (machineEndtimes[machine] > endTimes[index - 1]) { //if machine end time later than last operation in the same job
-                    endTimes[index] = machineEndtimes[machine] + runTimes[index];
-                    machineEndtimes[machine] += runTimes[index];
+                    endTimes[index] = machineEndtimes[machine] + n.runTime;
+                    machineEndtimes[machine] += n.runTime;
                 } else {
-                    endTimes[index] = endTimes[index-1] + runTimes[index];
+                    endTimes[index] = endTimes[index-1] + n.runTime;
                     machineEndtimes[machine] = endTimes[index];
                 }
             }
@@ -187,9 +173,6 @@ public class JSSColony extends Colony {
     private List<Edge> findPathJSS(Node start) {
 
         Node currentNode = start;
-        //allowed.remove(currentNode);
-        //allowed.add(nodes.get(nodes.indexOf(currentNode)+1));
-        //visited.add(currentNode);
         ArrayList<Edge> path = new ArrayList<Edge>();
 
         while (!allowed.isEmpty()) {
@@ -230,7 +213,7 @@ public class JSSColony extends Colony {
 
             int currentIndex = nodes.indexOf(currentNode);
             //if node is not last in it's sequence add the next to allowed
-            if ((currentIndex != numNodes -1) && (jobNo[currentIndex+1] == jobNo[currentIndex])) {
+            if (currentNode.sequence != opsPerJob) {
                 allowed.add(nodes.get(currentIndex+1));
             }
 

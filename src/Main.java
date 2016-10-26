@@ -73,15 +73,15 @@ public class Main {
 		writer.printf("%d,%d,%d\n", jss.numMachines, jss.calculateMakespan(order), jss.numNodes / jss.numMachines);
 		for(Node n : order){
 			int index = jss.nodes.indexOf(n);
-			int machineNum = jss.machineNo[index];
+			int machineNum = n.machine;
 			machines.get(machineNum-1).add(n);
-			writer.printf("%d,%d,%d\n", machineNum-1, jss.jobNo[index], jss.runTimes[index]);
+			writer.printf("%d,%d,%d\n", machineNum-1, n.job, n.runTime);
 		}
 		for (List<Node> machine : machines){
 			System.out.println("Machine #" + (machines.indexOf(machine)+1));
 			for (Node n : machine){
 		        int index = n.label.charAt(0) - 97;
-				System.out.printf("\tworking on job #%d for %d time\n", jss.jobNo[index], jss.runTimes[index]);
+				System.out.printf("\tworking on job #%d for %d time\n", n.job, n.runTime);
 			}
 		}
 		writer.close();
