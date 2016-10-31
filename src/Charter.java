@@ -42,8 +42,8 @@ public class Charter {
 		width = 800;
 		height = 800;
 		series = new XYSeries[2];
-		series[0] = new XYSeries("Global Best Makespan");
-		series[1] = new XYSeries("Local Best Makespan");
+		series[0] = new XYSeries("Local Best Makespan");
+		series[1] = new XYSeries("Global Best Makespan");
 		data.addSeries(series[0]);
 		data.addSeries(series[1]);
 	}
