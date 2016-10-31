@@ -45,8 +45,8 @@ public class Main {
 			charter.addValue(currentBest, 0, time);
 			charter.addValue(jss.bestMakespan, 1, time);
 			time++;
-			improvements[improvIndex++%stagnationTime] = currentBest - currentVal;
-			currentVal = currentBest;
+			improvements[improvIndex++%stagnationTime] = jss.bestMakespan - currentVal;
+			currentVal = jss.bestMakespan;
 			
 			hasStagnated = true;
 			for(int imp : improvements){
