@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -21,7 +22,7 @@ public class Main {
 		randGen = new Random(seed);
 	}
 	
-	public static void runColonyWith(double a, double b, double r, double Q, int numAnts, int numIterations, String file){
+	public static void runColonyWith(double a, double b, double r, double Q, int numAnts, int stagnationTime, String file){
 		JSSColony jss = new JSSColony(numAnts);
 		jss.alpha = a;
 		jss.beta = b;
@@ -33,21 +34,31 @@ public class Main {
 		try {
 			 grapher = new PrintWriter(file+"plot.csv");
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return;
 		}
 		
 		
-		for(int i = 0; i < numIterations; i++){
-			if (Main.verbose)
-				System.out.println("=======Start of JSS Generation=======");
+		int[] improvements = new int[stagnationTime];
+		Arrays.fill(improvements, -1);
+		int improvIndex = 0;
+		int currentVal = jss.iterate();
+		int time = 0;
+		boolean hasStagnated = false;
+		while (!hasStagnated){
 			int currentBest = jss.iterate();
-			grapher.printf("%d,%d,%d\n", i, jss.bestMakespan, currentBest);
-
-			if (Main.verbose)
-				System.out.println("========End of JSS Generation========");
+			grapher.printf("%d,%d,%d\n", time++, jss.bestMakespan, currentBest);
+			improvements[improvIndex++%stagnationTime] = currentBest - currentVal;
+			currentVal = currentBest;
+			
+			hasStagnated = true;
+			for(int imp : improvements){
+				if (imp != 0){
+					hasStagnated = false;
+				}
+			}
 		}
+		
 		grapher.close();
 		// Display best path
                 jss.bestPath.remove(0); //remove edge from startNode from bestpath
