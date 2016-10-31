@@ -10,6 +10,8 @@ public class Main {
 	public static Random randGen;
 	public static long seed = 12334;
 	public static boolean verbose = false;
+	public static int numTestMachines = 20;
+	public static int numTestJobs = 20;
 	public static void main(String[] args) throws IOException {
 		randGen = new Random(seed);
 		
@@ -30,8 +32,8 @@ public class Main {
 		jss.rho = r;
 		jss.Q = Q;
 		//jss.loadJSSP();
-		jss.loadRandom(8,8,12);
-		Charter charter = new Charter();
+		jss.loadRandom(numTestMachines,numTestJobs,12);
+		Charter charter = new Charter("ACO with a=" + a+ ", "+numTestMachines+" machines, " + numTestJobs+" jobs");
 		
 		
 		int[] improvements = new int[stagnationTime];
