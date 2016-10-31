@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,9 +10,9 @@ public class Main {
 	public static Random randGen;
 	public static long seed = 12334;
 	public static boolean verbose = false;
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		randGen = new Random(seed);
-
+		
 		runColonyWith(3.5,1.0,0.5,100.0,5,100, "a");
 		randGen = new Random(seed);
 		runColonyWith(5,1.0,0.5,100.0,5,100, "b");
@@ -30,13 +31,7 @@ public class Main {
 		jss.Q = Q;
 		//jss.loadJSSP();
 		jss.loadRandom(8,8,12);
-		PrintWriter grapher;
-		try {
-			 grapher = new PrintWriter(file+"plot.csv");
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-			return;
-		}
+		Charter charter = new Charter();
 		
 		
 		int[] improvements = new int[stagnationTime];
@@ -47,7 +42,9 @@ public class Main {
 		boolean hasStagnated = false;
 		while (!hasStagnated){
 			int currentBest = jss.iterate();
-			grapher.printf("%d,%d,%d\n", time++, jss.bestMakespan, currentBest);
+			charter.addValue(currentBest, 0, time);
+			charter.addValue(jss.bestMakespan, 1, time);
+			time++;
 			improvements[improvIndex++%stagnationTime] = currentBest - currentVal;
 			currentVal = currentBest;
 			
@@ -58,8 +55,12 @@ public class Main {
 				}
 			}
 		}
-		
-		grapher.close();
+		try {
+			charter.generateGraph(file);
+		} catch (IOException e1) {
+			System.out.println("Error creating image file");
+			e1.printStackTrace();
+		}
 		// Display best path
                 jss.bestPath.remove(0); //remove edge from startNode from bestpath
 
