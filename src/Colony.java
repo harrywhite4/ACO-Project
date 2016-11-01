@@ -115,13 +115,7 @@ public class Colony {
 	}
 	
 	public List<Edge> edgesFromNode(Node node) {
-		ArrayList<Edge> foundEdges = new ArrayList<Edge>();
-		for(Edge e : edgeList){
-			if (e.source == node){
-				foundEdges.add(e);
-			}
-		}
-		return foundEdges;
+		return new ArrayList<Edge>(node.localEdges);
 	}
 	
 }

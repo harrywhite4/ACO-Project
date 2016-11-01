@@ -1,4 +1,7 @@
 
+
+import java.util.List;
+
 public class Node {
 	public double x;
 	public double y;
@@ -7,6 +10,7 @@ public class Node {
         public int job;
         public int sequence;
         public int runTime;
+    public List<Edge> localEdges;
 	public Node(){
 		this.x = 0;
 		this.y = 0;

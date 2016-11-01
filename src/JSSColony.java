@@ -1,6 +1,9 @@
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class JSSColony extends Colony {
@@ -60,12 +63,14 @@ public class JSSColony extends Colony {
         Edge e;
         Node n;
         e = new Edge(startNode, nodes.get(0));
+        startNode.localEdges = new ArrayList<Edge>();
         edgeList.add(e);
         for (int i = 1; i < numNodes; i++) {
             n = nodes.get(i);
             if (n.sequence == 1) { //if first in a job
                 e = new Edge(startNode, n, 1);
                 edgeList.add(e);
+                startNode.localEdges.add(e);
             }
         }
     }
@@ -115,15 +120,25 @@ public class JSSColony extends Colony {
     private void connectNodes() {
 
         Edge toadd;
-
+        for (Node n:nodes){
+        	n.localEdges = new ArrayList<Edge>();
+        	for (Node m : nodes){
+        		toadd = new Edge(n, m, 1);
+        		n.localEdges.add(toadd);
+        		edgeList.add(toadd);
+        	}
+        }
+        /*
         for (int i=0; i < numNodes; i++) {
+        	nodes.get(i).localEdges = new ArrayList<Edge>(numNodes);
             for(int j=0; j < numNodes; j++) {
                 if (j != i) {
                     toadd = new Edge(nodes.get(i), nodes.get(j), 1);
+                    nodes.get(i).localEdges.add(toadd);
                     edgeList.add(toadd);
                 }
             }
-        }
+        }*/
     }
 
     public int calculateMakespan(ArrayList<Node> order) {
