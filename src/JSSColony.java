@@ -251,16 +251,25 @@ public class JSSColony extends Colony {
         int minMakespan = -1;
         int minMakespanIndex = 0;
         int makeSpan;
+        HashMap<Integer,Integer> spans = new HashMap<Integer,Integer>();
         for(int i = 0; i < numAnts; i++){
             resetJSS();
             paths.add(findPathJSS(startNode));
             makeSpan = calculateMakespan(visited);
+            int existing = spans.getOrDefault(makeSpan, 0);
+            spans.put(makeSpan, existing+1);
             if (makeSpan < minMakespan || minMakespan == -1) {
                 minMakespan = makeSpan;
                 minMakespanIndex = i;
             }
         }
-        
+        int maxIndex = 0;
+        for (int i = 0; i < spans.size(); i++){
+        	if ((Integer)(spans.keySet().toArray()[i]) > (Integer)(spans.keySet().toArray()[i])){
+        		maxIndex = i;
+        	}
+        }
+        int mode = (Integer) spans.keySet().toArray()[maxIndex];
         // Evaporate Pheromone
         for(Edge e : edgeList){
             e.pheromone = (1 - rho) * e.pheromone;
@@ -313,7 +322,7 @@ public class JSSColony extends Colony {
 	        System.out.println("Makespan was " + minMakespan);
 		}
 
-        return minMakespan;
+        return mode;
 
         
     }
