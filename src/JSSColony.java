@@ -13,6 +13,7 @@ public class JSSColony extends Colony {
     public int numMachines;
     public int opsPerJob;
     public static boolean elitistAnt = true;
+    public static boolean localEvap = false;
 
     //set of nodes that are able to be visited base on constraints of problem
     public ArrayList<Node> allowed;
@@ -221,7 +222,12 @@ public class JSSColony extends Colony {
             while (cumProb < randRoll){
                 cumProb += weights.get(i++)/weightSum;
             }
+            
             Edge selectedEdge = edges.get(i-1);
+
+            if (localEvap == true) {
+                selectedEdge.pheromone = selectedEdge.pheromone * (1 - rho);
+            }
             
             currentNode = selectedEdge.target;
             path.add(selectedEdge);
@@ -256,7 +262,14 @@ public class JSSColony extends Colony {
             resetJSS();
             paths.add(findPathJSS(startNode));
             makeSpan = calculateMakespan(visited);
-            int existing = spans.getOrDefault(makeSpan, 0);
+            Integer existingObj = spans.get(makeSpan);
+            int existing;
+            //set to zero if not in spans, had to remove getOrDefault as it's java 8 only
+            if (existingObj == null) {
+            	existing = 0;
+            } else {
+            	existing = existingObj.intValue();
+            }
             spans.put(makeSpan, existing+1);
             if (makeSpan < minMakespan || minMakespan == -1) {
                 minMakespan = makeSpan;
@@ -314,18 +327,13 @@ public class JSSColony extends Colony {
         	}
         }
         
-        
-        
-
-		if (Main.verbose) {
-			System.out.println(sb.toString());
-	        System.out.println("Makespan was " + minMakespan);
-		}
+        if (Main.verbose) {
+                System.out.println(sb.toString());
+        System.out.println("Makespan was " + minMakespan);
+        }
 
         return mode;
 
-        
     }
     
-
 }
