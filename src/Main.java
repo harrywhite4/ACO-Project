@@ -21,14 +21,14 @@ public class Main {
 		randGen = new Random(seed);*/
 		randGen = new Random(seed);
 		runColonyWith(4,0,0.5,200.0,10,50, "a");
-		/*randGen = new Random(seed);
+		randGen = new Random(seed);
 		runColonyWith(3.5,0,0.5,200.0,10,50, "b");
 		randGen = new Random(seed);
 		runColonyWith(3.0,0,0.5,200.0,10,50, "c");
 		randGen = new Random(seed);
 		runColonyWith(2.5,0,0.5,200.0,10,50, "d");
 		randGen = new Random(seed);
-		runColonyWith(2.0,0,0.5,200.0,10,50, "e"); */
+		runColonyWith(2.0,0,0.5,200.0,10,50, "e");
 	}
 	
 	public static void runColonyWith(double a, double b, double r, double Q, int numAnts, int stagnationTime, String file){
