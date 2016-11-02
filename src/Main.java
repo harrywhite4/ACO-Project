@@ -39,8 +39,12 @@ public class Main {
 		jss.Q = Q;
 		//jss.loadJSSP();
 		jss.loadRandom(numTestMachines,numTestJobs,12);
-		Charter charter = new Charter("ACO with a=" + a+ ", "+numTestMachines+" machines, " + numTestJobs+" jobs");
-		
+		Charter charter = new Charter("ACO with "+numTestMachines+" machines, " + numTestJobs+" jobs");
+		charter.addLegend("α", a);
+		charter.addLegend("β", b);
+		charter.addLegend("ρ", r);
+		charter.addLegend("Q", Q);
+		charter.addLegend("n", numAnts);
 		
 		int[] improvements = new int[stagnationTime];
 		Arrays.fill(improvements, -1);
