@@ -76,7 +76,7 @@ public class Charter {
 		xAxis.setAutoRangeIncludesZero(false);
 		xAxis.setAutoRange(true);
 		plot.setBackgroundPaint(Color.WHITE);
-		LegendItemCollection items = new LegendItemCollection();
+		final LegendItemCollection items = new LegendItemCollection();
 		for (Pair p : legend){
 			LegendItem item = new LegendItem(p.getKey() + " = " + p.getValue());
 			items.add(item);

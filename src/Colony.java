@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-
+// General Colony Class extended by JSSColony.java
 public class Colony {
 	public ArrayList<Edge> edgeList;
 	public Node startNode;

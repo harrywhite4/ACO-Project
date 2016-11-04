@@ -13,7 +13,7 @@ public class JSSColony extends Colony {
     public int numMachines;
     public int opsPerJob;
     public static boolean elitistAnt = true;
-    public static boolean localEvap = false;
+    public static boolean localEvap = true;
 
     //set of nodes that are able to be visited base on constraints of problem
     public ArrayList<Node> allowed;
@@ -36,7 +36,7 @@ public class JSSColony extends Colony {
     public void loadJSSP() {
         //example problem used for testing 
         int[] machineNo = {1, 2, 3, 1, 2, 3, 1, 2, 3};
-        int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3}; //could remove this and just use opsperjob
+        int[] jobNo =  {1, 1, 1, 2, 2, 2, 3, 3, 3};
         int[] runTimes = {3, 2, 2, 2, 4, 1, 0, 4, 3};
         opsPerJob = 3;
 
@@ -81,7 +81,7 @@ public class JSSColony extends Colony {
     	int numJobs = jobs;
     	numNodes = numMachines * numJobs;
         opsPerJob = numMachines;
-    	// Generate random reqs
+    	// Generate random requirements
     	int newMachineNo;
     	int newJobNo;
         int newSequence;
@@ -99,7 +99,9 @@ public class JSSColony extends Colony {
     		current++;
     	}
 
+    	//add edges
     	connectNodes();
+    	//add edges from start node
         connectStart();
     }
 
@@ -129,52 +131,46 @@ public class JSSColony extends Colony {
         		edgeList.add(toadd);
         	}
         }
-        /*
-        for (int i=0; i < numNodes; i++) {
-        	nodes.get(i).localEdges = new ArrayList<Edge>(numNodes);
-            for(int j=0; j < numNodes; j++) {
-                if (j != i) {
-                    toadd = new Edge(nodes.get(i), nodes.get(j), 1);
-                    nodes.get(i).localEdges.add(toadd);
-                    edgeList.add(toadd);
-                }
-            }
-        }*/
     }
 
     public int calculateMakespan(ArrayList<Node> order) {
 
         if (order.size() != numNodes) {
+        	//debugging messages for incomplete solution
             System.out.println("incomplete solution generated!!!");
             System.out.println("soln of size " + order.size() + " it should be of size " + numNodes);
         }
 
-        int[] machineEndtimes = new int[numMachines];
+        int[] machineEndtimes = new int[numMachines]; //completion time of last operation per machine
         Arrays.fill(machineEndtimes, 0);
-        int[] endTimes = new int[numNodes];
+        int[] endTimes = new int[numNodes]; //completion time of all operations
         Arrays.fill(endTimes, -1);
        
         int index, machine;
         Node n;
 
-        for (int i=0; i < numNodes; i++) {
+        for (int i=0; i < numNodes; i++) { //for each node
             n = order.get(i);
-            index = nodes.indexOf(n); //index of node in nodes arrayList;
+            index = nodes.indexOf(n); //index of node in the nodes arrayList;
             machine = n.machine - 1;
             if (n.sequence == 1) { //if first in a job
+            	//complete in next available slot on machine
                 endTimes[index] = machineEndtimes[machine] + n.runTime;
                 machineEndtimes[machine] += n.runTime;
             } else {
                 if (machineEndtimes[machine] > endTimes[index - 1]) { //if machine end time later than last operation in the same job
+                	//complete in next available slot on machine
                     endTimes[index] = machineEndtimes[machine] + n.runTime;
                     machineEndtimes[machine] += n.runTime;
                 } else {
+                	//complete after previous operation in the sequence
                     endTimes[index] = endTimes[index-1] + n.runTime;
                     machineEndtimes[machine] = endTimes[index];
                 }
             }
         }
         
+        //find latest end time
         int max = 0;
         for (int i=0; i < numMachines; i++) {
             if (machineEndtimes[i] > max) {
@@ -295,17 +291,9 @@ public class JSSColony extends Colony {
             bestMakespan = minMakespan;
         }
         
-        
-        
         StringBuilder sb = new StringBuilder("Best found path of: ");
         sb.append(path.get(0).source.label);
-        // Add to each edge the same
-        /*
-        for(Edge e : path){
-            sb.append("-" + e.target.label);
-            e.pheromone += Q / minMakespan;
-        }
-*/
+
         for (List<Edge> p : paths){
         	ArrayList<Node> visitedNodes = new ArrayList<Node>();
         	
@@ -320,7 +308,7 @@ public class JSSColony extends Colony {
         		e.pheromone += Q / calculateMakespan(visitedNodes);
         	}
         }
-        // Add pheromone to Gbest (elitist ant)
+        // Add pheromone to Gbest (elitist ant modification)
         if (JSSColony.elitistAnt){
         	for (Edge e : bestPath){
         		e.pheromone += 1.0;
